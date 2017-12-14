@@ -1,8 +1,6 @@
 require "digest"    # for hash checksum digest function SHA256
-require "pp"        # for pp => pretty printer
 
-
-class Gem
+class Block
 
   attr_reader :index
   attr_reader :timestamp
@@ -22,16 +20,6 @@ class Gem
     sha = Digest::SHA256.new
     sha.update( @index.to_s + @timestamp.to_s + @data + @previous_hash )
     sha.hexdigest
-  end
-
-
-  def self.first( data="Genesis" )    # create genesis (big bang! first) block
-    ## uses index zero (0) and arbitrary previous_hash ("0")
-    Block.new( 0, data, "0" )
-  end
-
-  def self.next( previous, data="Transaction Data..." )
-    Block.new( previous.index+1, data, previous.hash )
   end
 
 end
