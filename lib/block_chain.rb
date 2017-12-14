@@ -11,7 +11,7 @@ class BlockChain
     @genesis = @blocks.first
   end
 
-  def add(data="Transaction Data..." )
+  def add(data)
     @blocks << Block.new( @blocks.last.index + 1, data, @blocks.last.hash)
     @blocks.last
   end
