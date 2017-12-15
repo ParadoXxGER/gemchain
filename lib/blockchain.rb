@@ -12,14 +12,15 @@ class Blockchain
   @@block_class = Block
   @@storage_path = './data/'
 
-  def initialize()
+  def initialize
     @block_index = []
   end
 
   def create_index(index, name, previous_hash)
     raise DuplicateIndexError, 'ERROR: Index is already created!' unless index_empty?
-    @block_index << @@block_class.new(index, name, previous_hash.to_s)
-    save_index
+    block = @@block_class.new(index, name, previous_hash.to_s)
+    @block_index << block
+    save_index block
   end
 
   def transaction(data)
@@ -27,7 +28,7 @@ class Blockchain
     block = @@block_class.new(@block_index.last.index + 1, data, @block_index.last.hash)
     if valid?
       block.save
-      save_index
+      save_index block
     else
       raise ChainIntegrityError "FATAL: Blockchain corrupted on block #{@block_index[block.index - 1].index}"
     end
@@ -42,12 +43,14 @@ class Blockchain
     true
   end
 
+  private
+
   def save_index(block)
     raise NoIndexError, 'ERROR: Please create a index first!' if index_empty?
     @block_index << block
     File.write("#{@@storage_path}#{@block_index.first.data}.index", @block_index.to_json)
   rescue IOError => e
-    puts "FATAL: Could not write index to disk!"
+    puts "FATAL: Could not write index to disk! #{e}"
     rollback block
   end
 
