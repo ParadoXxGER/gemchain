@@ -1,3 +1,4 @@
+require 'gemchain/blockchain'
 require_relative 'contract'
 
 class ContractChain < Blockchain
