@@ -39,10 +39,11 @@ Lets start creating a contract Chain:
 require_relative 'contract_chain'
 
 my_contract_chain = ContractChain.new
+
+# Create a genesis block:
 my_contract_chain.create_index(0, 'ContractChain', 0)
 
 # Now you can add transactions, which will rollback if there is a error
-
 my_data = MyData.new ("key", "value", "key1", "value2")
 
 my_contract_chain.transaction mydata
