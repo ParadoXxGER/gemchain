@@ -1,4 +1,6 @@
-require "digest"    # for hash checksum digest function SHA256
+require 'digest'    # for hash checksum digest function SHA256
+require 'json'
+require 'fileutils'
 
 class Block
 
@@ -16,9 +18,21 @@ class Block
     @hash          = calc_hash
   end
 
+  def save
+    File.write("./data/#{hash}.block", {
+      index: @index,
+      timestamp: @timestamp,
+      data: @data,
+      previous_hash: @previous_hash,
+      hash: @hash }.to_json
+    )
+  end
+
+  private
+
   def calc_hash
     sha = Digest::SHA256.new
-    sha.update( @index.to_s + @timestamp.to_s + @data.to_s + @previous_hash )
+    sha.update(@index.to_s + @timestamp.to_s + @data.to_s + @previous_hash.to_s)
     sha.hexdigest
   end
 

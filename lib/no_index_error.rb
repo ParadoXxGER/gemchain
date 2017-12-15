@@ -1,0 +1,2 @@
+class NoIndexError < StandardError
+end

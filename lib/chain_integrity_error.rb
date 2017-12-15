@@ -1,0 +1,2 @@
+class ChainIntegrityError < StandardError
+end

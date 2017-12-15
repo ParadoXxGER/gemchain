@@ -1,0 +1,2 @@
+class IndexAlreadyExistsError < StandardError
+end
