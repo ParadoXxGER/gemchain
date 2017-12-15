@@ -1,6 +1,6 @@
 require 'spectr'
 require 'byebug'
-
+require 'digest'
 require_relative '../lib/block'
 
 Spectr.new.test 'Test a crypto block' do |test|
@@ -42,5 +42,17 @@ Spectr.new.test 'Test a crypto block' do |test|
 
   test.assume('Block b3 has a correct previous has if b2 is also correct', true) do
     b3.previous_hash.eql? b2.hash
+  end
+
+  test.assume('The Block has a SHA512 Digest', Digest::SHA512) do
+    b0.digest
+  end
+
+  test.assume('The Block has ./data/ as storage path', './data/') do
+    b0.storage_path
+  end
+
+  test.assume('The Block has .block suffix', '.block') do
+    b0.block_suffix
   end
 end

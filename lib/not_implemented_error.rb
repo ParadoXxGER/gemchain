@@ -1,0 +1,2 @@
+class NotImplementedError < StandardError
+end
