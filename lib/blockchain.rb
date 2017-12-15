@@ -7,49 +7,57 @@ require_relative 'duplicate_index_error'
 require_relative 'no_index_error'
 
 class Blockchain
-  attr_reader :blocks
-  attr_reader :genesis
-  attr_reader :block_class
+  attr_reader :block_index
 
-  def initialize(block_class=Block)
-    @blocks = []
-    @block_class = block_class
+  @@block_class = Block
+  @@storage_path = './data/'
+
+  def initialize()
+    @block_index = []
   end
 
   def create_index(index, name, previous_hash)
-    raise DuplicateIndexError, 'ERROR: Index is already created!' unless @blocks.empty?
-    @blocks << @block_class.new(index, name, previous_hash.to_s)
-    @genesis = @blocks.first
+    raise DuplicateIndexError, 'ERROR: Index is already created!' unless index_empty?
+    @block_index << @@block_class.new(index, name, previous_hash.to_s)
     save_index
   end
 
-  def add(data)
-    raise NoIndexError, 'ERROR: Please create a index first!' if @blocks.empty?
-    block = @block_class.new(@blocks.last.index + 1, data, @blocks.last.hash)
-    @blocks << block
-    block.save if integrity_given?
-    @blocks.last
+  def transaction(data)
+    raise NoIndexError, 'ERROR: Please create a index first!' if index_empty?
+    block = @@block_class.new(@block_index.last.index + 1, data, @block_index.last.hash)
+    if valid?
+      block.save
+      save_index
+    else
+      raise ChainIntegrityError "FATAL: Blockchain corrupted on block #{@block_index[block.index - 1].index}"
+    end
+    @block_index.last
   end
 
-  def integrity_given?
-    @blocks.each do |block|
+  def valid?
+    @block_index.each do |block|
       next if block.index.zero?
-      raise ChainIntegrityError unless block.previous_hash.eql? @blocks[block.index - 1].hash
+      raise ChainIntegrityError unless block.previous_hash.eql? @block_index[block.index - 1].hash
     end
     true
   end
 
-  def save_index
-    raise NoIndexError, 'ERROR: Please create a index first!' if @blocks.empty?
-    File.write("./data/#{genesis.data}.index", @blocks.to_json)
+  def save_index(block)
+    raise NoIndexError, 'ERROR: Please create a index first!' if index_empty?
+    @block_index << block
+    File.write("#{@@storage_path}#{@block_index.first.data}.index", @block_index.to_json)
+  rescue IOError => e
+    puts "FATAL: Could not write index to disk!"
+    rollback block
   end
 
-  def load_index(name)
-    raise DuplicateIndexError, 'ERROR: Index is already created!' unless @blocks.empty?
-    bc_index = JSON.parse(File.read("./data/#{name}.index"))
-    # Todo verify blockchain integrity!
-    BlockChain.new.tap do |bc|
-      bc.create_index(bc_index[0].index, bc_index[0].data, bc_index[0].previous_hash)
-    end
+  def rollback(block)
+    puts "WARNING: Rolling back block number #{block.index}"
+    @block_index.delete(block)
   end
+
+  def index_empty?
+    @block_index.empty?
+  end
+
 end

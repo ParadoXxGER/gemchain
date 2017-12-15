@@ -9,6 +9,9 @@ class Block
   attr_reader :previous_hash
   attr_reader :hash
 
+  @@storage_path = './data/'
+  @@block_suffix = '.block'
+
   def initialize(index, data, previous_hash)
     @index         = index
     @timestamp     = Time.now
@@ -18,13 +21,15 @@ class Block
   end
 
   def save
-    File.write("./data/#{hash}.block", {
-      index: @index,
-      timestamp: @timestamp,
-      data: @data,
-      previous_hash: @previous_hash,
-      hash: @hash
+    File.write("#{@@storage_path}#{hash}#{@@block_suffix}", {
+        index: @index,
+        timestamp: @timestamp,
+        data: @data,
+        previous_hash: @previous_hash,
+        hash: @hash
     }.to_json)
+  rescue IOError => e
+    puts "FATAL: Could not save blocks on the blockchain #{e}"
   end
 
   private
