@@ -4,13 +4,10 @@ require 'byebug'
 require_relative '../lib/block'
 
 Spectr.new.test 'Test a crypto block' do |test|
-
   b0 = Block.new(0, 'Hello World', 0)
   b1 = Block.new(b0.index + 1, 'My Data', b0.hash)
   b2 = Block.new(b1.index + 1, 'Hashycorp', b1.hash)
   b3 = Block.new(b2.index + 1, 'Integrity check!', b2.hash)
-
-  byebug
 
   test.assume('Block b0 is initialized correctly', true) do
     b0.is_a?(Block)
@@ -46,5 +43,4 @@ Spectr.new.test 'Test a crypto block' do |test|
   test.assume('Block b3 has a correct previous has if b2 is also correct', true) do
     b3.previous_hash.eql? b2.hash
   end
-
 end

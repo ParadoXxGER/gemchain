@@ -1,9 +1,8 @@
-require 'digest'    # for hash checksum digest function SHA256
+require 'digest' # for hash checksum digest function SHA256
 require 'json'
 require 'fileutils'
 
 class Block
-
   attr_reader :index
   attr_reader :timestamp
   attr_reader :data
@@ -24,8 +23,8 @@ class Block
       timestamp: @timestamp,
       data: @data,
       previous_hash: @previous_hash,
-      hash: @hash }.to_json
-    )
+      hash: @hash
+    }.to_json)
   end
 
   private
@@ -35,5 +34,4 @@ class Block
     sha.update(@index.to_s + @timestamp.to_s + @data.to_s + @previous_hash.to_s)
     sha.hexdigest
   end
-
 end

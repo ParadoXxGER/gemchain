@@ -1,0 +1,24 @@
+AllCops:
+  Includes:
+    - 'lib/**'
+    - 'modules/**'
+    - 'test/**/*'
+  Excludes:
+    - 'Gemfile'
+    - 'Gemfile.lock'
+    - 'gemchain.gemspec'
+Metrics/AbcSize:
+  Enabled: true
+  Max: 17.5
+
+Metrics/LineLength:
+  Enabled: true
+  Max: 115
+
+Metrics/MethodLength:
+  CountComments: false
+  Max: 15
+Documentation:
+  Enabled: false
+Style/Lambda:
+  Enabled: false
